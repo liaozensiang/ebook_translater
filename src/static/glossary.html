@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossary Manager</title>
+    <style>
+        :root {
+            --bg-color: #1e1e2e;
+            --card-bg: #2a2a3c;
+            --text-color: #c9d1d9;
+            --accent-color: #ffb86c;
+            --border-color: #44475a;
+            --danger-color: #ff5555;
+            --success-color: #50fa7b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--accent-color);
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            color: #8be9fd;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #191925;
+            color: var(--accent-color);
+        }
+
+        tr:hover {
+            background-color: #38384f;
+        }
+
+        input {
+            background-color: #181825;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-add {
+            background-color: var(--success-color);
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .btn-save {
+            background-color: var(--accent-color);
+            color: #000;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="nav">
+            <a href="/">← Back to Translation</a>
+        </div>
+        <h1>Glossary Manager</h1>
+        <button class="btn-add" onclick="addRow()">+ Add New Term</button>
+
+        <table id="glossary-table">
+            <thead>
+                <tr>
+                    <th width="40%">Japanese (Key)</th>
+                    <th width="40%">Chinese (Value)</th>
+                    <th width="20%">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <!-- Rows here -->
+            </tbody>
+        </table>
+
+        <button class="btn-save" onclick="saveGlossary()">💾 Save Changes</button>
+    </div>
+
+    <script>
+        let glossary = {};
+
+        async function load() {
+            const res = await fetch('/api/glossary');
+            glossary = await res.json();
+            render();
+        }
+
+        function render() {
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+
+            Object.entries(glossary).forEach(([k, v]) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td><input type="text" value="${k}" onchange="updateKey('${k}', this.value)"></td>
+                <td><input type="text" value="${v}" onchange="updateVal('${k}', this.value)"></td>
+                <td><button class="btn-delete" onclick="deleteRow('${k}')">Delete</button></td>
+            `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addRow() {
+            // Add temporary key
+            glossary["NEW_TERM_" + Date.now()] = "";
+            render();
+        }
+
+        function updateKey(oldKey, newKey) {
+            if (oldKey === newKey) return;
+            if (glossary[newKey]) {
+                alert("Key already exists!");
+                render();
+                return;
+            }
+            const val = glossary[oldKey];
+            delete glossary[oldKey];
+            glossary[newKey] = val;
+            render();
+        }
+
+        function updateVal(key, newVal) {
+            glossary[key] = newVal;
+        }
+
+        function deleteRow(key) {
+            if (confirm("Delete this term?")) {
+                delete glossary[key];
+                render();
+            }
+        }
+
+        async function saveGlossary() {
+            await fetch('/api/glossary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(glossary)
+            });
+            alert("Glossary Saved!");
+        }
+
+        window.onload = load;
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+ebooklib
+beautifulsoup4
+openai
+tqdm
+flask
+deep-translator
