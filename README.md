@@ -11,20 +11,20 @@ Features:
 
 ## 📂 Project Structure
 
-- `source/`: Place your **input** EPUBs here (formerly `raw_jp`).
+- `source/`: Place your **input** EPUBs here.
 - `reference/`: Place your **aligned** EPUBs here (for glossary extraction).
 - `output/`: Generated EPUBs will appear here.
 - `src/`: Source code.
 
-## 🚀 Setup Guides (SOPs)
+## 🚀 Setup Choices 
 
-Choose the guide that matches your hardware:
+Avalible for these situations:
 
-- **[🔌 Local GPU (RTX 3090/4090)](docs/SOP_Local_GPU.md)**  
+- **[🔌 Local GPU (RTX 3090/4090)]**  
   *Run everything on one powerful machine.*
-- **[☁️ Remote GPU Server](docs/SOP_Remote_Server.md)**  
+- **[☁️ Remote GPU Server]**  
   *Run AI on a server, UI on your laptop.*
-- **[🔑 API Key (DeepSeek/OpenAI)](docs/SOP_API_Only.md)**  
+- **[🔑 API Key (DeepSeek/OpenAI)]**  
   *No GPU required. Use cloud APIs.*
 
 ## 🛠️ Usage Workflow (New Script Method)
@@ -42,7 +42,7 @@ This tool now uses a simplified script-based workflow driven by a `.env` configu
    OUTPUT_EPUB=output/40_zh.epub
    SRC_LANG=Japanese
    TGT_LANG=Traditional Chinese
-   LLM_API_URL=http://localhost:8000/v1
+   LLM_API_URL=http://your_ip_addr:8000/v1
    ```
 
 ### 2. Workflow Steps
